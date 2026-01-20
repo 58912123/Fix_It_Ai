@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix-It AI | Howard County Community Platform</title>
+    
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== PROFESSIONAL DESIGN ==================== */
+        :root {
+            --primary: #1e3a5f;
+            --secondary: #2a9d8f;
+            --accent: #2ecc71;
+            --accent-light: #4cec8c;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+            --light: #f8faf9;
+            --dark: #1a535c;
+            --gray: #6c757d;
+            --border: #e0e7ff;
+            --shadow: 0 4px 12px rgba(30, 58, 95, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==================== HEADER ==================== */
+        .main-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            color: var(--accent);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: white;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .main-nav {
+            display: flex;
+            gap: 30px;
+            background: white;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 84px;
+            z-index: 999;
+        }
+
+        .nav-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 5px 0;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        /* ==================== MAIN CONTENT ==================== */
+        .main-content {
+            padding: 40px 0;
+            min-height: 500px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header h1 {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            color: var(--gray);
+        }
+
+        /* ==================== 3 REPORTING METHODS ==================== */
+        .reporting-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .report-method {
+            background: white;
+            border-radius: 16px;
+            padding: 35px 30px;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .report-method:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.15);
+        }
+
+        .method-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e8f4f1 0%, #d4f1e6 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 36px;
+            color: var(--accent);
+            border: 2px solid var(--border);
+        }
+
+        .report-method h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .report-method p {
+            color: var(--gray);
+            font-size: 15px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* ==================== GPS STATUS ==================== */
+        .gps-status {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .gps-status i {
+            color: var(--accent);
+            font-size: 24px;
+        }
+
+        .gps-info {
+            flex: 1;
+        }
+
+        .gps-info strong {
+            color: var(--primary);
+        }
+
+        #locationText {
+            color: var(--gray);
+        }
+
+        /* ==================== AI ENGINE STATUS ==================== */
+        .ai-engine {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid var(--border);
+            margin: 40px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .ai-engine h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .engine-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .engine-stat {
+            padding: 15px;
+            background: #f8faf9;
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e0e7ff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 5px;
+            transition: width 2s ease;
+        }
+
+        /* ==================== MAP ==================== */
+        .map-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid var(--border);
+            margin: 40px 0;
+            box-shadow: var(--shadow);
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* ==================== AI CHAT ==================== */
+        .ai-chat {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid var(--border);
+            margin: 40px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chat-header h3 {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8faf9;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .chat-message.ai {
+            border-left: 4px solid var(--accent);
+        }
+
+        .chat-message.user {
+            border-left: 4px solid var(--primary);
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        /* ==================== ANALYTICS ==================== */
+        .analytics {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid var(--border);
+            margin: 40px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-container {
+            padding: 20px;
+            background: #f8faf9;
+            border-radius: 12px;
+        }
+
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ==================== FORM STYLES ==================== */
+        .report-form {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid var(--border);
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* ==================== EMERGENCY ==================== */
+        .emergency-hotline {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 30px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+
+        .emergency-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 20px 0;
+            display: block;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .main-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            
+            .reporting-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .engine-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== UTILITY ==================== */
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+        .mt-30 { margin-top: 30px; }
+        .mb-20 { margin-bottom: 20px; }
+        .d-none { display: none; }
+        .d-block { display: block; }
+        .w-100 { width: 100%; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <div>
+                    <h1>Fix-It <span>AI</span></h1>
+                    <p>Howard County Community Platform</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <a href="#" class="nav-link active" onclick="showSection('dashboard')">Dashboard</a>
+        <a href="#" class="nav-link" onclick="showSection('reporting')">Report Issues</a>
+        <a href="#" class="nav-link" onclick="showSection('mapSection')">Live Map</a>
+        <a href="#" class="nav-link" onclick="showSection('aiChat')">AI Assistant</a>
+        <a href="#" class="nav-link" onclick="showSection('analytics')">Analytics</a>
+        <a href="#" class="nav-link" onclick="showSection('emergency')">Emergency</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="section-header">
+                <h1>Community Dashboard</h1>
+                <p>Real-time monitoring of community issues and government responses</p>
+            </div>
+            
+            <!-- GPS Status -->
+            <div class="gps-status">
+                <i class="fas fa-satellite"></i>
+                <div class="gps-info">
+                    <strong>Your Location:</strong> <span id="locationText">Getting GPS location...</span>
+                </div>
+                <button class="btn btn-secondary" onclick="refreshGPS()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <!-- AI Engine Status -->
+            <div class="ai-engine">
+                <h3><i class="fas fa-cogs"></i> AI Engine Status</h3>
+                <div class="engine-stats">
+                    <div class="engine-stat">
+                        <div class="stat-label">Image Analysis AI</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="imageAiStatus" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="engine-stat">
+                        <div class="stat-label">Voice Recognition AI</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="voiceAiStatus" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="engine-stat">
+                        <div class="stat-label">GPS Accuracy</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="gpsStatusBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="reporting-methods">
+                <div class="report-method" onclick="showSection('reporting')">
+                    <div class="method-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Active Issues</h3>
+                    <div class="stat-value" id="activeIssues" style="font-size: 48px; color: var(--primary); margin: 20px 0;">0</div>
+                    <p>Community issues requiring attention</p>
+                </div>
+                
+                <div class="report-method" onclick="showSection('analytics')">
+                    <div class="method-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Response Time</h3>
+                    <div class="stat-value" id="responseTime" style="font-size: 48px; color: var(--accent); margin: 20px 0;">--</div>
+                    <p>Average government response time</p>
+                </div>
+                
+                <div class="report-method" onclick="showSection('mapSection')">
+                    <div class="method-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Live Coverage</h3>
+                    <div class="stat-value" id="mapCoverage" style="font-size: 48px; color: var(--secondary); margin: 20px 0;">100%</div>
+                    <p>Howard County coverage</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reporting Section -->
+        <section id="reporting" class="section">
+            <div class="section-header">
+                <h1>Report Community Issues</h1>
+                <p>Choose a reporting method - All reports go directly to Howard County government</p>
+            </div>
+            
+            <!-- GPS Status -->
+            <div class="gps-status">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="gps-info">
+                    <strong>Reporting from:</strong> <span id="reportLocationText">Getting location...</span>
+                </div>
+            </div>
+            
+            <!-- 3 Reporting Methods -->
+            <div class="reporting-methods">
+                <div class="report-method" onclick="startCameraReport()">
+                    <div class="method-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Camera Report</h3>
+                    <p>Take photos with automatic AI analysis. GPS location and time automatically recorded.</p>
+                    <button class="btn btn-primary w-100 mt-20">Take Photo & Report</button>
+                </div>
+                
+                <div class="report-method" onclick="startVoiceReport()">
+                    <div class="method-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h3>Voice Report</h3>
+                    <p>Describe the issue with voice. AI transcribes and analyzes for priority classification.</p>
+                    <button class="btn btn-primary w-100 mt-20">Start Voice Report</button>
+                </div>
+                
+                <div class="report-method" onclick="startTextReport()">
+                    <div class="method-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Text Report</h3>
+                    <p>Write detailed description. AI suggests issue category and priority based on content.</p>
+                    <button class="btn btn-primary w-100 mt-20">Write Detailed Report</button>
+                </div>
+            </div>
+            
+            <!-- Report Form -->
+            <div class="report-form d-none" id="reportForm">
+                <h2 id="formTitle" style="color: var(--primary); margin-bottom: 20px;"></h2>
+                
+                <form id="issueForm" onsubmit="submitReport(event)">
+                    <div class="form-group">
+                        <label class="form-label">Issue Type</label>
+                        <select class="form-control" id="issueType" required>
+                            <option value="">Select issue type</option>
+                            <option value="pothole">Pothole</option>
+                            <option value="graffiti">Graffiti/Vandalism</option>
+                            <option value="streetlight">Street Light Out</option>
+                            <option value="trash">Trash/Debris</option>
+                            <option value="water">Water Leak/Flooding</option>
+                            <option value="tree">Tree/Sidewalk Damage</option>
+                            <option value="traffic">Traffic Sign/Signal</option>
+                            <option value="other">Other Issue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="issueDescription" placeholder="Describe the issue in detail..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Priority Level</label>
+                        <select class="form-control" id="issuePriority" required>
+                            <option value="low">Low - Routine Maintenance</option>
+                            <option value="medium" selected>Medium - Needs Attention</option>
+                            <option value="high">High - Safety Concern</option>
+                            <option value="emergency">Emergency - Immediate Danger</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="mediaContainer">
+                        <!-- Media preview will be inserted here -->
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary" onclick="cancelReport()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit to Government</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section id="mapSection" class="section">
+            <div class="section-header">
+                <h1>Live Community Map</h1>
+                <p>Real-time visualization of reported issues in Howard County</p>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button class="btn btn-secondary" onclick="centerMapOnUser()">
+                        <i class="fas fa-location-arrow"></i> My Location
+                    </button>
+                    <button class="btn btn-secondary" onclick="showAllReports()">
+                        <i class="fas fa-layer-group"></i> All Reports
+                    </button>
+                    <button class="btn btn-primary" onclick="showSection('reporting')">
+                        <i class="fas fa-plus"></i> Add Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="ai-engine mt-30">
+                <h3><i class="fas fa-map-marked-alt"></i> Map Analytics</h3>
+                <div class="engine-stats">
+                    <div class="engine-stat">
+                        <div class="stat-label">Reports in Your Area</div>
+                        <div id="nearbyReports" style="font-size: 32px; color: var(--primary);">0</div>
+                    </div>
+                    <div class="engine-stat">
+                        <div class="stat-label">Heat Map Intensity</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="heatMapIntensity" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="engine-stat">
+                        <div class="stat-label">Map Coverage</div>
+                        <div id="coveragePercent" style="font-size: 32px; color: var(--accent);">100%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Section -->
+        <section id="aiChat" class="section">
+            <div class="section-header">
+                <h1>AI Assistant</h1>
+                <p>Get help with reporting, tracking, and community information</p>
+            </div>
+            
+            <div class="ai-chat">
+                <div class="chat-header">
+                    <h3><i class="fas fa-robot"></i> Fix-It AI Assistant</h3>
+                    <button class="btn btn-secondary" onclick="clearChat()">
+                        <i class="fas fa-trash"></i> Clear Chat
+                    </button>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message ai">
+                        <strong><i class="fas fa-robot"></i> Fix-It AI:</strong>
+                        <p>Hello! I'm your AI assistant for Howard County community issues.</p>
+                        <p>I can help you with:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Reporting community issues</li>
+                            <li>Checking report status</li>
+                            <li>Understanding government processes</li>
+                            <li>Emergency information</li>
+                        </ul>
+                        <p style="margin-top: 10px;">How can I assist you today?</p>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your question..." onkeypress="handleChatKeyPress(event)">
+                    <button class="btn btn-primary" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                    <button class="btn btn-secondary" onclick="startVoiceChat()">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <div class="section-header">
+                <h1>Community Analytics</h1>
+                <p>Data and insights about community issues and government responses</p>
+            </div>
+            
+            <div class="analytics">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">Issue Types</h4>
+                        <canvas id="issueTypesChart" height="200"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">Response Times</h4>
+                        <canvas id="responseTimesChart" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="ai-engine mt-30">
+                    <h3><i class="fas fa-chart-bar"></i> Real-time Statistics</h3>
+                    <div class="engine-stats">
+                        <div class="engine-stat">
+                            <div class="stat-label">Total Reports Today</div>
+                            <div id="reportsToday" style="font-size: 32px; color: var(--primary);">0</div>
+                        </div>
+                        <div class="engine-stat">
+                            <div class="stat-label">Avg Resolution Time</div>
+                            <div id="avgResolutionTime" style="font-size: 32px; color: var(--accent);">--</div>
+                        </div>
+                        <div class="engine-stat">
+                            <div class="stat-label">AI Accuracy Rate</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="aiAccuracyRate" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Section -->
+        <section id="emergency" class="section">
+            <div class="section-header">
+                <h1>Emergency Services</h1>
+                <p>Immediate emergency response information</p>
+            </div>
+            
+            <div class="emergency-hotline">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px;"></i>
+                <h2 style="margin: 20px 0; font-size: 28px;">For Life-Threatening Emergencies</h2>
+                <div class="emergency-number">911</div>
+                <p>Call immediately for police, fire, or medical emergencies</p>
+            </div>
+            
+            <div class="reporting-methods">
+                <div class="report-method" onclick="sendEmergencyReport('police')">
+                    <div class="method-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Police Emergency</h3>
+                    <p>Report crimes, accidents, or public safety threats</p>
+                    <button class="btn btn-danger w-100 mt-20">Emergency Report</button>
+                </div>
+                
+                <div class="report-method" onclick="sendEmergencyReport('fire')">
+                    <div class="method-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h3>Fire Emergency</h3>
+                    <p>Report fires, smoke, or rescue situations</p>
+                    <button class="btn btn-danger w-100 mt-20">Emergency Report</button>
+                </div>
+                
+                <div class="report-method" onclick="sendEmergencyReport('medical')">
+                    <div class="method-icon">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <h3>Medical Emergency</h3>
+                    <p>Report medical emergencies or injuries</p>
+                    <button class="btn btn-danger w-100 mt-20">Emergency Report</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <h3>Howard County Community Platform</h3>
+            <p style="opacity: 0.9; margin: 20px 0;">Official community issue reporting system</p>
+            
+            <div class="footer-links">
+                <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+                <a href="#" onclick="showSection('reporting')">Report Issues</a>
+                <a href="#" onclick="showSection('mapSection')">Live Map</a>
+                <a href="#" onclick="showSection('aiChat')">AI Assistant</a>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>For community use only. Report issues responsibly.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== GLOBAL VARIABLES ====================
+        let userReports = [];
+        let map = null;
+        let userLocation = null;
+        let mapMarkers = [];
+        let issueTypesChart = null;
+        let responseTimesChart = null;
+        let currentReportType = null;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing Fix-It AI Platform...');
+            
+            // Load user data
+            loadUserData();
+            
+            // Initialize GPS
+            initializeGPS();
+            
+            // Initialize AI engine
+            initializeAIEngine();
+            
+            // Initialize analytics
+            initializeAnalytics();
+            
+            console.log('Platform ready - 3 reporting methods available');
+        });
+
+        // ==================== GPS SYSTEM ====================
+        function initializeGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        
+                        updateGPSDisplay();
+                        initializeMap();
+                        
+                        // Update AI engine status
+                        updateAIEngineStatus('gps', 100);
+                    },
+                    function(error) {
+                        console.log('GPS error:', error);
+                        userLocation = { lat: 39.2072, lng: -76.8575 }; // Howard County center
+                        updateGPSDisplay();
+                        initializeMap();
+                        
+                        // Update AI engine status
+                        updateAIEngineStatus('gps', 70);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                userLocation = { lat: 39.2072, lng: -76.8575 };
+                updateGPSDisplay();
+                initializeMap();
+            }
+        }
+
+        function updateGPSDisplay() {
+            if (userLocation) {
+                const locationText = `${userLocation.lat.toFixed(6)}, ${userLocation.lng.toFixed(6)}`;
+                document.getElementById('locationText').textContent = locationText;
+                document.getElementById('reportLocationText').textContent = locationText;
+                
+                // Update GPS accuracy in AI engine
+                const accuracy = userLocation.accuracy ? Math.min(100, Math.max(10, 100 - (userLocation.accuracy / 10))) : 85;
+                document.getElementById('gpsStatusBar').style.width = `${accuracy}%`;
+            }
+        }
+
+        function refreshGPS() {
+            document.getElementById('locationText').textContent = 'Updating location...';
+            initializeGPS();
+        }
+
+        // ==================== AI ENGINE ====================
+        function initializeAIEngine() {
+            // Simulate AI engine initialization
+            setTimeout(() => {
+                updateAIEngineStatus('image', 95);
+                updateAIEngineStatus('voice', 90);
+                updateAIEngineStatus('gps', 85);
+            }, 1000);
+        }
+
+        function updateAIEngineStatus(type, percentage) {
+            const elements = {
+                'image': 'imageAiStatus',
+                'voice': 'voiceAiStatus',
+                'gps': 'gpsStatusBar'
+            };
+            
+            if (elements[type]) {
+                const element = document.getElementById(elements[type]);
+                if (element) {
+                    element.style.width = `${percentage}%`;
+                }
+            }
+        }
+
+        // ==================== MAP SYSTEM ====================
+        function initializeMap() {
+            if (!userLocation) return;
+            
+            // Create map centered on user location
+            map = L.map('map').setView([userLocation.lat, userLocation.lng], 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Add user location marker
+            const userMarker = L.marker([userLocation.lat, userLocation.lng], {
+                icon: L.divIcon({
+                    html: '<div style="background: #1e3a5f; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"><i class="fas fa-user"></i></div>',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map);
+            
+            userMarker.bindPopup('<b>Your Location</b>').openPopup();
+            
+            // Load reports on map
+            loadReportsOnMap();
+            
+            // Update map analytics
+            updateMapAnalytics();
+        }
+
+        function loadReportsOnMap() {
+            if (!map || userReports.length === 0) return;
+            
+            // Clear existing markers
+            mapMarkers.forEach(marker => map.removeLayer(marker));
+            mapMarkers = [];
+            
+            // Add report markers
+            userReports.forEach(report => {
+                if (report.location) {
+                    const markerColor = getPriorityColor(report.priority);
+                    const marker = L.marker([report.location.lat, report.location.lng], {
+                        icon: L.divIcon({
+                            html: `<div style="background: ${markerColor}; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"><i class="fas fa-exclamation"></i></div>`,
+                            iconSize: [25, 25]
+                        })
+                    }).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <b>${report.issueType.toUpperCase()}</b><br>
+                        ${report.description.substring(0, 50)}...<br>
+                        <small>${new Date(report.timestamp).toLocaleString()}</small>
+                    `);
+                    
+                    mapMarkers.push(marker);
+                }
+            });
+        }
+
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'emergency': return '#e74c3c';
+                case 'high': return '#f39c12';
+                case 'medium': return '#2ecc71';
+                case 'low': return '#3498db';
+                default: return '#95a5a6';
+            }
+        }
+
+        function centerMapOnUser() {
+            if (map && userLocation) {
+                map.setView([userLocation.lat, userLocation.lng], 15);
+            }
+        }
+
+        function showAllReports() {
+            if (!map || userReports.length === 0) return;
+            
+            const bounds = new L.LatLngBounds();
+            userReports.forEach(report => {
+                if (report.location) {
+                    bounds.extend([report.location.lat, report.location.lng]);
+                }
+            });
+            
+            if (userLocation) {
+                bounds.extend([userLocation.lat, userLocation.lng]);
+            }
+            
+            if (bounds.isValid()) {
+                map.fitBounds(bounds);
+            }
+        }
+
+        function updateMapAnalytics() {
+            if (userReports.length > 0) {
+                // Count nearby reports (within 5km)
+                const nearbyCount = userReports.filter(report => {
+                    if (!report.location) return false;
+                    const distance = getDistance(userLocation.lat, userLocation.lng, report.location.lat, report.location.lng);
+                    return distance < 5; // 5km
+                }).length;
+                
+                document.getElementById('nearbyReports').textContent = nearbyCount;
+                
+                // Update heat map intensity based on report density
+                const intensity = Math.min(100, Math.max(10, (userReports.length * 20)));
+                document.getElementById('heatMapIntensity').style.width = `${intensity}%`;
+            }
+        }
+
+        function getDistance(lat1, lon1, lat2, lon2) {
+            // Haversine formula for distance in km
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // ==================== ANALYTICS ====================
+        function initializeAnalytics() {
+            // Initialize charts
+            initializeCharts();
+            
+            // Update analytics data
+            updateAnalytics();
+        }
+
+        function initializeCharts() {
+            const issueTypesCtx = document.getElementById('issueTypesChart');
+            const responseTimesCtx = document.getElementById('responseTimesChart');
+            
+            if (issueTypesCtx && responseTimesCtx) {
+                issueTypesChart = new Chart(issueTypesCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Potholes', 'Graffiti', 'Street Lights', 'Trash', 'Water', 'Other'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0, 0],
+                            backgroundColor: [
+                                '#e74c3c',
+                                '#f39c12',
+                                '#2ecc71',
+                                '#3498db',
+                                '#9b59b6',
+                                '#95a5a6'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                
+                responseTimesChart = new Chart(responseTimesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Emergency', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            label: 'Response Time (hours)',
+                            data: [0, 0, 0, 0],
+                            backgroundColor: '#2ecc71'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hours'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateAnalytics() {
+            // Update dashboard stats
+            document.getElementById('activeIssues').textContent = userReports.length;
+            
+            // Calculate average response time
+            if (userReports.length > 0) {
+                const totalHours = userReports.reduce((sum, report) => {
+                    return sum + (report.responseTime || 24); // Default 24 hours if not resolved
+                }, 0);
+                
+                const avgHours = Math.round(totalHours / userReports.length);
+                document.getElementById('responseTime').textContent = `${avgHours}h`;
+                document.getElementById('avgResolutionTime').textContent = `${avgHours}h`;
+            }
+            
+            // Update reports today
+            const today = new Date().toDateString();
+            const reportsToday = userReports.filter(report => 
+                new Date(report.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('reportsToday').textContent = reportsToday;
+            
+            // Update AI accuracy
+            document.getElementById('aiAccuracyRate').style.width = '92%';
+            
+            // Update charts
+            updateCharts();
+        }
+
+        function updateCharts() {
+            if (!issueTypesChart || !responseTimesChart) return;
+            
+            // Count issue types
+            const issueCounts = {
+                pothole: 0, graffiti: 0, streetlight: 0, 
+                trash: 0, water: 0, other: 0
+            };
+            
+            userReports.forEach(report => {
+                if (issueCounts[report.issueType] !== undefined) {
+                    issueCounts[report.issueType]++;
+                } else {
+                    issueCounts.other++;
+                }
+            });
+            
+            // Update issue types chart
+            issueTypesChart.data.datasets[0].data = [
+                issueCounts.pothole,
+                issueCounts.graffiti,
+                issueCounts.streetlight,
+                issueCounts.trash,
+                issueCounts.water,
+                issueCounts.other
+            ];
+            issueTypesChart.update();
+            
+            // Update response times chart (simulated data)
+            responseTimesChart.data.datasets[0].data = [2, 8, 24, 48];
+            responseTimesChart.update();
+        }
+
+        // ==================== USER DATA ====================
+        function loadUserData() {
+            try {
+                const savedReports = localStorage.getItem('fixit_user_reports');
+                if (savedReports) {
+                    userReports = JSON.parse(savedReports);
+                }
+            } catch (error) {
+                console.log('Error loading user data:', error);
+                userReports = [];
+            }
+            
+            updateAnalytics();
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('fixit_user_reports', JSON.stringify(userReports));
+            } catch (error) {
+                console.log('Error saving user data:', error);
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(
+                link => link.onclick.toString().includes(`'${sectionId}'`)
+            );
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Section-specific initialization
+            switch(sectionId) {
+                case 'mapSection':
+                    setTimeout(() => {
+                        if (map) {
+                            map.invalidateSize();
+                            loadReportsOnMap();
+                        }
+                    }, 100);
+                    break;
+                    
+                case 'analytics':
+                    setTimeout(() => {
+                        updateAnalytics();
+                    }, 100);
+                    break;
+                    
+                case 'reporting':
+                    // Hide report form
+                    document.getElementById('reportForm').classList.add('d-none');
+                    break;
+            }
+        }
+
+        // ==================== 3 REPORTING METHODS ====================
+        function startCameraReport() {
+            currentReportType = 'camera';
+            showReportForm('Camera Report');
+            
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.innerHTML = `
+                <div style="text-align: center; padding: 30px; border: 2px dashed var(--border); border-radius: 8px; background: #f8faf9;">
+                    <i class="fas fa-camera" style="font-size: 48px; color: var(--gray); margin-bottom: 15px;"></i>
+                    <p style="color: var(--gray); margin-bottom: 15px;">Camera access required for photo reporting</p>
+                    <button type="button" class="btn btn-secondary" onclick="capturePhoto()">
+                        <i class="fas fa-camera"></i> Take Photo
+                    </button>
+                </div>
+            `;
+        }
+
+        function startVoiceReport() {
+            currentReportType = 'voice';
+            showReportForm('Voice Report');
+            
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.innerHTML = `
+                <div style="text-align: center; padding: 30px; border: 2px dashed var(--border); border-radius: 8px; background: #f8faf9;">
+                    <i class="fas fa-microphone" style="font-size: 48px; color: var(--gray); margin-bottom: 15px;"></i>
+                    <p style="color: var(--gray); margin-bottom: 15px;">Microphone access required for voice reporting</p>
+                    <button type="button" class="btn btn-secondary" onclick="startVoiceRecording()">
+                        <i class="fas fa-microphone"></i> Start Recording
+                    </button>
+                </div>
+                <div id="voiceStatus" style="margin-top: 15px; padding: 10px; background: #e8f4f1; border-radius: 8px; border: 2px solid var(--accent); display: none;">
+                    <p style="color: var(--accent); margin: 0;"><i class="fas fa-check-circle"></i> Recording saved</p>
+                </div>
+            `;
+        }
+
+        function startTextReport() {
+            currentReportType = 'text';
+            showReportForm('Text Report');
+            
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.innerHTML = `
+                <p style="color: var(--gray); font-size: 14px;">
+                    <i class="fas fa-info-circle"></i> Provide detailed information about the issue. 
+                    Include location specifics, time observed, and any safety concerns.
+                </p>
+            `;
+        }
+
+        function showReportForm(title) {
+            document.getElementById('formTitle').textContent = title;
+            document.getElementById('reportForm').classList.remove('d-none');
+            document.getElementById('reportForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function capturePhoto() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Camera access not available in your browser');
+                return;
+            }
+            
+            // Simulate photo capture
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.innerHTML = `
+                <div style="margin-top: 15px; padding: 15px; background: #e8f4f1; border-radius: 8px; border: 2px solid var(--accent);">
+                    <p style="color: var(--accent); margin: 0;">
+                        <i class="fas fa-check-circle"></i> Photo ready for submission
+                    </p>
+                </div>
+            `;
+        }
+
+        function startVoiceRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Microphone access not available in your browser');
+                return;
+            }
+            
+            // Show recording status
+            const voiceStatus = document.getElementById('voiceStatus');
+            voiceStatus.style.display = 'block';
+            
+            // Simulate AI transcription
+            setTimeout(() => {
+                const descriptionField = document.getElementById('issueDescription');
+                descriptionField.value = "I'm reporting a pothole on Main Street near the intersection. It's about 2 feet wide and 6 inches deep. Vehicles are swerving to avoid it.";
+                voiceStatus.innerHTML = '<p style="color: var(--accent); margin: 0;"><i class="fas fa-check-circle"></i> Voice transcribed by AI</p>';
+            }, 1500);
+        }
+
+        function cancelReport() {
+            document.getElementById('reportForm').classList.add('d-none');
+            currentReportType = null;
+            document.getElementById('issueForm').reset();
+        }
+
+        function submitReport(event) {
+            event.preventDefault();
+            
+            const issueType = document.getElementById('issueType').value;
+            const description = document.getElementById('issueDescription').value;
+            const priority = document.getElementById('issuePriority').value;
+            
+            if (!issueType || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create report
+            const report = {
+                id: 'RPT-' + Date.now(),
+                type: currentReportType,
+                issueType: issueType,
+                description: description,
+                priority: priority,
+                location: userLocation,
+                timestamp: new Date().toISOString(),
+                status: 'submitted_to_government',
+                responseTime: priority === 'emergency' ? 2 : 
+                             priority === 'high' ? 8 : 
+                             priority === 'medium' ? 24 : 48
+            };
+            
+            // Add to user reports
+            userReports.unshift(report);
+            
+            // Save data
+            saveUserData();
+            
+            // Update analytics
+            updateAnalytics();
+            
+            // Update map
+            if (map) {
+                loadReportsOnMap();
+                updateMapAnalytics();
+            }
+            
+            // Show confirmation
+            alert(`Report submitted to Howard County Government\n\nReport ID: ${report.id}\nIssue: ${issueType}\nPriority: ${priority}\n\nGovernment will review your report.`);
+            
+            // Reset form
+            cancelReport();
+            
+            // Show dashboard
+            showSection('dashboard');
+        }
+
+        // ==================== AI CHAT ====================
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage('user', message);
+            input.value = '';
+            
+            // AI response
+            setTimeout(() => {
+                const aiResponse = getAIResponse(message);
+                addChatMessage('ai', aiResponse);
+            }, 1000);
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function startVoiceChat() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Microphone access not available');
+                return;
+            }
+            
+            addChatMessage('ai', 'Listening... Please describe your question or issue.');
+            
+            // Simulate voice input
+            setTimeout(() => {
+                const voiceQuestions = [
+                    "How do I report a pothole?",
+                    "What's the status of my report?",
+                    "How long does it take for the government to respond?",
+                    "What should I do in an emergency?",
+                    "Can I report graffiti through this system?"
+                ];
+                
+                const randomQuestion = voiceQuestions[Math.floor(Math.random() * voiceQuestions.length)];
+                document.getElementById('chatInput').value = randomQuestion;
+                sendChatMessage();
+            }, 2000);
+        }
+
+        function addChatMessage(sender, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            if (sender === 'ai') {
+                messageDiv.innerHTML = `<strong><i class="fas fa-robot"></i> Fix-It AI:</strong> <p>${message}</p>`;
+            } else {
+                messageDiv.innerHTML = `<strong><i class="fas fa-user"></i> You:</strong> <p>${message}</p>`;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('pothole') || lowerMessage.includes('report')) {
+                return "To report a pothole, use the Camera Report to take photos, Voice Report to describe it, or Text Report for details. Include location and size information for faster government response.";
+            } else if (lowerMessage.includes('status') || lowerMessage.includes('check')) {
+                return "Your reports are submitted directly to Howard County government. They typically respond within 24 hours for normal issues, and within 2 hours for emergencies.";
+            } else if (lowerMessage.includes('emergency')) {
+                return "For emergencies, use the Emergency section or call 911 immediately. The platform can send emergency reports with your GPS location to all relevant departments.";
+            } else if (lowerMessage.includes('time') || lowerMessage.includes('long')) {
+                return "Average response times: Emergency (2 hours), High priority (8 hours), Medium (24 hours), Low (48 hours). AI analysis helps prioritize reports.";
+            } else if (lowerMessage.includes('map') || lowerMessage.includes('location')) {
+                return "The Live Map shows all reported issues in Howard County. Your location is marked with a blue icon. Click on report markers for details.";
+            } else {
+                return "I can help you with reporting issues, checking status, understanding government processes, and emergency information. What would you like to know?";
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="chat-message ai">
+                    <strong><i class="fas fa-robot"></i> Fix-It AI:</strong>
+                    <p>Hello! I'm your AI assistant for Howard County community issues.</p>
+                    <p>I can help you with:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Reporting community issues</li>
+                        <li>Checking report status</li>
+                        <li>Understanding government processes</li>
+                        <li>Emergency information</li>
+                    </ul>
+                    <p style="margin-top: 10px;">How can I assist you today?</p>
+                </div>
+            `;
+        }
+
+        // ==================== EMERGENCY ====================
+        function sendEmergencyReport(type) {
+            if (!confirm(`⚠️ EMERGENCY REPORT ⚠️\n\nThis will send an emergency ${type} report with your location.\n\nCall 911 immediately for life-threatening emergencies.\n\nContinue with online report?`)) {
+                return;
+            }
+            
+            const emergencyTypes = {
+                'police': 'Police Emergency',
+                'fire': 'Fire Emergency',
+                'medical': 'Medical Emergency'
+            };
+            
+            const report = {
+                id: 'EMG-' + Date.now(),
+                type: 'emergency',
+                issueType: emergencyTypes[type],
+                description: `EMERGENCY ${type.toUpperCase()} REPORT - Immediate attention required`,
+                priority: 'emergency',
+                location: userLocation,
+                timestamp: new Date().toISOString(),
+                status: 'emergency_alert_sent',
+                responseTime: 2
+            };
+            
+            userReports.unshift(report);
+            saveUserData();
+            updateAnalytics();
+            
+            alert(`EMERGENCY REPORT SENT\n\n${emergencyTypes[type]} alert sent to Howard County emergency services with your location.`);
+            
+            if (map) {
+                loadReportsOnMap();
+            }
+            
+            showSection('dashboard');
+        }
+
+        // ==================== INITIAL LOAD ====================
+        window.onload = function() {
+            // Check for first visit
+            if (!localStorage.getItem('fixit_first_visit')) {
+                localStorage.setItem('fixit_first_visit', 'true');
+                setTimeout(() => {
+                    addChatMessage('ai', "Welcome to Fix-It AI Community Platform! I'm your AI assistant. You can report issues using Camera, Voice, or Text reporting methods. All reports go directly to Howard County government.");
+                }, 2000);
+            }
+            
+            // Show dashboard by default
+            showSection('dashboard');
+        };
+    </script>
+</body>
+</html>
